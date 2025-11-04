@@ -56,7 +56,9 @@ it('returns cached response for post request formdata body', async () => {
   const server = jest.fn(() => ({ post: 'formdata-body' }));
 
   nock('http://expo.test')
-    .post('/post', (body) => body.includes('formdata-body'))
+    .post('/post', (body) => {
+      return body.includes('[object FormData]');
+    })
     .reply(201, server);
 
   function fetchAction() {
@@ -75,8 +77,8 @@ it('returns cached response for post request formdata body', async () => {
   expect(response).toEqual(cachedResponse);
 });
 
-// NOTE(cedric): error-responses aren't properly handled in nock@14.0.0-beta.7, re-enable once fixed
-xit('does not cache failed respose for get request', async () => {
+// NOTE(cedric): error-responses aren't properly handled in nock@14.0.10, re-enable once fixed
+xit('does not cache failed response for get request', async () => {
   const server = jest.fn(() => ({ error: 'not found' }));
 
   nock('http://expo.test').get('/error/get').reply(404, server);
